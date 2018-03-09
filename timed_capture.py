@@ -1,7 +1,5 @@
-from picamera.array import PiRGBArray
 from picamera import PiCamera
 import time
-import cv2
 import datetime
 import imutils
 import pudb
@@ -25,9 +23,7 @@ if not os.path.isdir(homeDir):
 # camera init
 logger.info("Initializing Camera...")
 camera = PiCamera()
-camera.resolution = (640, 480)
-camera.framerate = 16
-rawCapture = PiRGBArray(camera, size=(640, 480))
+camera.resolution = (3280, 2464)
 
 # necessary to warm-up
 time.sleep(0.1)
@@ -37,11 +33,14 @@ lastUploaded = None
 numUploaded = 0
 
 now = datetime.datetime.now()
-today6pm = now.replace(hour=18, minute=0, second=0,microsecond=0)
+today6pm = now.replace(hour=19, minute=0, second=0,microsecond=0)
 
-dayString = now.strftime("%b-%d")
+dayString = now.strftime("%b-%d-%a")
 uploadPath = os.path.join(homeDir, dayString)
 
+captureRate = 3*60 # capture period (in sec)
+
+logger.info("Capture every {} seconds".format(captureRate))
 logger.info("Creating directory for today")
 
 # safely create today's directory
@@ -53,8 +52,7 @@ except OSError:
 
 logger.info("Entering camera capturing loop...")
 
-for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-    frame = f.array
+while(True):
     timestamp = datetime.datetime.now()
 
     if timestamp > today6pm:
@@ -62,13 +60,11 @@ for f in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True
         # stop gathering 
         sys.exit(0)
 
-    if lastUploaded is None or (timestamp - lastUploaded).seconds >= 300: 
+    if lastUploaded is None or (timestamp - lastUploaded).seconds >= captureRate: 
 
-        filePath = os.path.join(uploadPath, "cap_{}.jpg".format(numUploaded))
+        filePath = os.path.join(uploadPath, "cap_{:03d}.jpg".format(numUploaded))
         logger.info("Uploading image: {} @ {}".format(filePath, timestamp.strftime("%H:%M")))
-
-        cv2.imwrite(filePath, f.array)
+        camera.capture(filePath)
         lastUploaded = timestamp
         numUploaded += 1
 
-    rawCapture.truncate(0)
