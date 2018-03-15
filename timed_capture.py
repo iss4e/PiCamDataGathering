@@ -30,15 +30,15 @@ time.sleep(0.1)
 logger.info("Done initializing")
 
 lastUploaded = None
-numUploaded = 0
+numUploaded = 197 
 
 now = datetime.datetime.now()
-today6pm = now.replace(hour=19, minute=0, second=0,microsecond=0)
+today6pm = now.replace(hour=22, minute=0, second=0,microsecond=0)
 
 dayString = now.strftime("%b-%d-%a")
 uploadPath = os.path.join(homeDir, dayString)
 
-captureRate = 3*60 # capture period (in sec)
+captureRate = 2*60 # capture period (in sec)
 
 logger.info("Capture every {} seconds".format(captureRate))
 logger.info("Creating directory for today")
