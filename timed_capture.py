@@ -33,7 +33,7 @@ lastUploaded = None
 numUploaded = 0 
 
 now = datetime.datetime.now()
-today6pm = now.replace(hour=22, minute=0, second=0,microsecond=0)
+endTime = now.replace(hour=22, minute=0, second=0,microsecond=0)
 
 dayString = now.strftime("%b-%d-%a")
 uploadPath = os.path.join(homeDir, dayString)
@@ -55,7 +55,7 @@ logger.info("Entering camera capturing loop...")
 while(True):
     timestamp = datetime.datetime.now()
 
-    if timestamp > today6pm:
+    if timestamp > endTime:
         logger.info("timestamp exceeds 6pm mark, exiting program!")
         # stop gathering 
         sys.exit(0)
